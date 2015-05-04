@@ -38,8 +38,10 @@ class TestResource(unittest.TestCase):
         assert auth.client.resource_owner_secret == 'token_secret'
 
     @mock.patch('requests.get', return_value=MockResponse())
-    def test_get(self, patched):
+    @mock.patch('petsy.resource.Resource.get_auth', return_value='auth')
+    def test_get(self, patched, patched2):
         r = Resource(self.creds)
+        
         resp = r.get('some/resource', params={ 'q': 'test' })
         assert resp == {
           'data': [],
@@ -49,8 +51,31 @@ class TestResource(unittest.TestCase):
             }
         }
 
+        # Test that get is called with the params that were passed in
+        # (base uri + resource)
+        patched2.assert_called_with('https://openapi.etsy.com/v2/some/resource', params={ 'q': 'test' }, auth='auth')
+
         # tested method raise an error if invalid arguments are passed in
         self.assertRaises(AssertionError, lambda: r.get(None))
 
-    def test_scan(self):
-        pass
+    @mock.patch('requests.get', return_value=MockResponse())
+    @mock.patch('petsy.resource.Resource.get_auth', return_value='auth')
+    def test_scan(self, patched, patched2):
+        r = Resource(self.creds)
+        
+        resp = r.scan('some/resource', params={ 'q': 'test' })
+        assert resp == {
+          'data': [],
+            'meta': {
+                'count': 0,
+                'type': 'item'
+            }
+        }
+
+        # Test that get is called with the params that were passed in
+        # (base uri + resource)
+        patched2.assert_called_with('https://openapi.etsy.com/v2/some/resource', params={'offset': -1, 'q': 'test', 'limit': 100}, auth='auth')
+
+        # tested method raise an error if invalid arguments are passed in
+        self.assertRaises(AssertionError, lambda: r.scan(None))
+        

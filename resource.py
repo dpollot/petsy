@@ -22,6 +22,8 @@ class Resource(object):
 
     # Returns an auth object to be used within requests
     def get_auth(self):
+        """Get an OAuth1 object based on current credentials
+        """
         return OAuth1(
             self.consumer_key,
             self.consumer_secret,
@@ -31,6 +33,18 @@ class Resource(object):
 
     # Get the resource (paged)
     def get(self, resource, params=None):
+        """Get the given resource
+
+        Arguments:
+        resource -- The resource (url, less query params) to get
+        params   -- Query params
+
+        Returns:
+        A dictionary containing the results of the get request
+        """
+        assert resource != None, 'expected resource to be a non null string'
+        assert len(resource) > 0
+
         auth = self.get_auth()
         url = self.BASE_URI + resource
 
@@ -52,6 +66,15 @@ class Resource(object):
 
     # Get all items of a given resource type
     def scan(self, resource, params=None):
+        """Iterates through an entire paged resource collection
+
+        Arguments:
+        resource -- The resource to get
+        params   -- (Optional) query params
+
+        Returns:
+        dict containing the results of the request
+        """
         assert resource != None, 'expected resource to be a non null string'
         assert len(resource) > 0
 
@@ -83,7 +106,9 @@ class Resource(object):
             for item in r['results']:
                 results.append(item)
 
-            query['offset'] = -1 if r['pagination'] == None or r['pagination']['next_page'] == None else int(r['pagination']['next_offset'])
+            query['offset'] = -1 if 'pagination' not in r or r['pagination'] == None \
+                or r['pagination']['next_page'] == None \
+                else int(r['pagination']['next_offset'])
         
         return {
             'data':results,
