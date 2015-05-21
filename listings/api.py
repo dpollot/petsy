@@ -38,7 +38,7 @@ class Listings(Resource):
         dict
         """
         assert listing_id != None, 'Expected listing_id to be a non null string.'
-        params = { 'includes': 'Variations' }
+        params = { 'includes': 'Transactions,ShippingInfo,Section,MainImage,Images,Variations' }
         url = 'listings/' + listing_id
         return self.get(url, params=params)
 

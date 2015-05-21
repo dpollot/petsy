@@ -38,6 +38,5 @@ class Transactions(Resource):
         dict
         """
         assert listing_id != None, 'Expected listing_id to be a non null string.'
-        params = { 'includes': 'Listing' }
         resource = 'listings/' + listing_id  + '/transactions'
-        return self.get(resource, params=params)
+        return self.get(resource)

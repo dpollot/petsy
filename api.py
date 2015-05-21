@@ -4,6 +4,7 @@ from util.objectdict import ObjectView
 from petsy.listings.api import Listings
 from petsy.transactions.api import Transactions
 from petsy.shops.api import Shops
+from petsy.users.api import Users
 
 BASE_URI = 'https://openapi.etsy.com/v2/'
 
@@ -26,3 +27,4 @@ class Api(object):
         self.listings = Listings(creds)
         self.transactions = Transactions(creds)
         self.shops = Shops(creds)
+        self.users = Users(creds)
